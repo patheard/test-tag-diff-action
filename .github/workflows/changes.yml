@@ -1,0 +1,51 @@
+name: "Test change detection"
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  get-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      current: ${{ steps.get-versions.outputs.current }}
+      target: ${{ steps.get-versions.outputs.target }}      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2      
+      - name: Get version
+        id: get-versions
+        run: |
+          TARGET="$(cat VERSION)"
+          CURRENT="$(git show HEAD~1:VERSION)"
+          echo "::set-output name=target::v${TARGET}"
+          echo "::set-output name=current::v${CURRENT}"
+
+  changes:
+    needs: get-versions
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.get-versions.outputs.target }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sanity test
+        run: |
+          echo "Current is ${{ needs.get-versions.outputs.target }}"
+          echo "Target is ${{ needs.get-versions.outputs.current }}"
+
+      - uses: dorny/paths-filter@1ec7035ff53cbd7a98744bd986f6ca1c7e17d1cb # latest
+        id: filter
+        with:
+          ref: ${{ needs.get-versions.outputs.target }}
+          base: ${{ needs.get-versions.outputs.current }}
+          filters: |
+            readme:
+              - 'README.md'
+
+      - name: Changes?
+        if: ${{ steps.filter.outputs.readme == 'true' }}
+        run: echo "README.md changed"
