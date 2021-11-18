@@ -19,7 +19,7 @@ jobs:
       - name: Get version
         id: get-versions
         run: |
-          CURRENT_SHA="$(git show -2 --pretty=format:"%h" --no-patch VERSION  | tail -n 1)"
+          CURRENT_SHA="$(git show -2 --skip 1 --pretty=format:"%h" --no-patch VERSION)"
           CURRENT="$(git show ${CURRENT_SHA}:VERSION)"
           TARGET="$(cat VERSION)"          
           echo "::set-output name=target::v${TARGET}"
@@ -38,8 +38,8 @@ jobs:
 
       - name: Sanity test
         run: |
-          echo "Current is ${{ needs.get-versions.outputs.target }}"
-          echo "Target is ${{ needs.get-versions.outputs.current }}"
+          echo "Current is ${{ needs.get-versions.outputs.current }}"
+          echo "Target is ${{ needs.get-versions.outputs.target }}"
 
       - uses: dorny/paths-filter@1ec7035ff53cbd7a98744bd986f6ca1c7e17d1cb # latest
         id: filter
