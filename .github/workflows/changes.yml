@@ -22,8 +22,7 @@ jobs:
       - name: Get version
         id: get-versions
         run: |
-          CURRENT_SHA="$(git show -2 --pretty=format:"%h" --no-patch VERSION | tail -n 1)"
-          CURRENT="$(git show ${CURRENT_SHA}:VERSION)"
+          CURRENT="$(git show main:VERSION)"
           TARGET="$(cat VERSION)"          
           echo "::set-output name=target::v${TARGET}"
           echo "::set-output name=current::v${CURRENT}"
