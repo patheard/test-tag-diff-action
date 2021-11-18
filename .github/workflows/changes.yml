@@ -41,7 +41,7 @@ jobs:
           echo "Current is ${{ needs.get-versions.outputs.current }}"
           echo "Target is ${{ needs.get-versions.outputs.target }}"
 
-      - uses: dorny/paths-filter@1ec7035ff53cbd7a98744bd986f6ca1c7e17d1cb # latest
+      - uses: cds-snc/paths-filter@6a46d6ba2334bcb1cd4a52e4e9a043a59fb6b855 # latest
         id: filter
         with:
           ref: ${{ needs.get-versions.outputs.target }}
