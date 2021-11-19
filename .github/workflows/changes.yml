@@ -31,24 +31,26 @@ jobs:
   changes:
     needs: get-versions
     runs-on: ubuntu-latest
+    env:
+      CURRENT: ${{ needs.get-versions.outputs.current }}
+      TARGET: ${{ needs.get-versions.outputs.target }}
     steps:
+
+      - name: Sanity test
+        run: |
+          echo "Current is ${{ env.CURRENT }}"
+          echo "Target is ${{ env.TARGET }}"
 
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: ${{ needs.get-versions.outputs.target }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Sanity test
-        run: |
-          echo "Current is ${{ needs.get-versions.outputs.current }}"
-          echo "Target is ${{ needs.get-versions.outputs.target }}"
+          ref: ${{ env.TARGET }}
 
       - uses: cds-snc/paths-filter@6a46d6ba2334bcb1cd4a52e4e9a043a59fb6b855 # latest
         id: filter
         with:
-          ref: ${{ needs.get-versions.outputs.target }}
-          base: ${{ needs.get-versions.outputs.current }}
+          ref: ${{ env.TARGET }}
+          base: ${{ env.CURRENT }}
           filters: |
             readme:
               - 'README.md'
